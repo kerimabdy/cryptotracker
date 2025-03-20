@@ -7,14 +7,18 @@ import com.plcoding.cryptotracker.core.domain.util.onSuccess
 import com.plcoding.cryptotracker.crypto.domain.CoinDataSource
 import com.plcoding.cryptotracker.crypto.presentation.models.CoinUi
 import com.plcoding.cryptotracker.crypto.presentation.models.toCoinUi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.ZonedDateTime
 
 class CoinListViewModel(
     private val coinDataSource: CoinDataSource
@@ -26,14 +30,38 @@ class CoinListViewModel(
         viewModelScope, SharingStarted.WhileSubscribed(5000L), CoinListState()
     )
 
-    fun onAction(actions: CoinListActions) {
-        when(actions) {
-            is CoinListActions.OnCoinClick -> onCoinClick(actions.coinUi)
+    private val _events = Channel<CoinListEvent>()
+    val events = _events.receiveAsFlow()
+
+    fun onAction(action: CoinListActions) {
+        when (action) {
+            is CoinListActions.OnCoinClick -> selectCoin(action.coinUi)
             CoinListActions.OnRefresh -> loadCoins()
         }
     }
 
-    private fun onCoinClick(coinUi: CoinUi) {}
+    private fun selectCoin(coinUi: CoinUi) {
+        _state.update {
+            it.copy(
+                selectedCoin = coinUi
+            )
+        }
+
+        viewModelScope.launch {
+            coinDataSource.getCoinHistory(
+                coinUi.id,
+                start = ZonedDateTime.now().minusDays(5),
+                end = ZonedDateTime.now()
+            )
+                .onSuccess { history ->
+                    println(history)
+                }
+                .onError { error ->
+                    _state.update { it.copy(isLoading = false) }
+                    _events.send(CoinListEvent.Error(error))
+                }
+        }
+    }
 
 
     private fun loadCoins() {
@@ -47,6 +75,7 @@ class CoinListViewModel(
                 }
             }.onError { error ->
                 _state.update { it.copy(isLoading = false) }
+                _events.send(CoinListEvent.Error(error))
             }
         }
     }
