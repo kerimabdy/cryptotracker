@@ -17,7 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -304,6 +304,47 @@ fun LineChart(
             }
         }
 
+        // Create gradient path that extends to bottom
+        val gradientPath = Path().apply {
+            if(drawPoints.isNotEmpty()) {
+                // Start from bottom-left
+                moveTo(drawPoints.first().x, viewPortBottomY)
+                
+                // Draw line to first point
+                lineTo(drawPoints.first().x, drawPoints.first().y)
+
+                // Follow the same curve as the line
+                for (i in 1 until drawPoints.size) {
+                    cubicTo(
+                        x1 = connectionPoint1[i - 1].x,
+                        y1 = connectionPoint1[i - 1].y,
+                        x2 = connectionPoint2[i - 1].x,
+                        y2 = connectionPoint2[i - 1].y,
+                        x3 = drawPoints[i].x,
+                        y3 = drawPoints[i].y,
+                    )
+                }
+
+                // Draw line to bottom-right and close the path
+                lineTo(drawPoints.last().x, viewPortBottomY)
+                close()
+            }
+        }
+
+        // Draw gradient background
+        drawPath(
+            path = gradientPath,
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                    style.chartLineColor.copy(alpha = 0.5f),
+                    style.chartLineColor.copy(alpha = 0.0f)
+                ),
+                startY = viewPortTopY,
+                endY = viewPortBottomY
+            )
+        )
+
+        // Draw the line path on top
         drawPath(
             path = linePath,
             color = style.chartLineColor,
@@ -311,9 +352,7 @@ fun LineChart(
                 width = 5f,
                 cap = StrokeCap.Round
             ),
-
         )
-
 
         drawPoints.forEachIndexed { index, point ->
             if(showHelperLines) {
