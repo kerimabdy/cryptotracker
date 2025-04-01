@@ -13,6 +13,8 @@ This application allows users to browse cryptocurrency information, view detaile
 - Dependency Injection with Koin
 - Kotlin Coroutines for asynchronous operations
 
+The UI has been enhanced with a modern design approach, featuring improved information layout and visual hierarchy to provide a better user experience.
+
 ## Screenshots
 
 | ![Coin List Screen](docs/images/coin_list_screen.png) | ![Coin Detail Screen](docs/images/coin_detail_screen.png) |
@@ -21,10 +23,11 @@ This application allows users to browse cryptocurrency information, view detaile
 
 ## Features
 
-- Browse list of cryptocurrencies
-- View detailed information for each coin
+- Browse list of cryptocurrencies with enhanced visual presentation
+- View detailed information for each coin with improved information hierarchy
 - Real-time price updates
-- Clean and modern UI built with Jetpack Compose
+- Modern and intuitive UI built with Jetpack Compose
+- Optimized layout for better readability and user experience
 - Error handling and loading states
 
 ## Technologies Used
