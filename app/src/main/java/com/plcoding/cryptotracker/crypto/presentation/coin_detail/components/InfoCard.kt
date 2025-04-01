@@ -4,10 +4,12 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -24,7 +26,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -41,83 +45,61 @@ fun InfoCard(
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     val defaultTextStyle = LocalTextStyle.current.copy(
-        textAlign = TextAlign.Center,
+        textAlign = TextAlign.Left,
         fontSize = 18.sp,
         color = contentColor
     )
     Card(
-        modifier = modifier
-            .padding(8.dp)
-            .shadow(
-                elevation = 15.dp,
-                shape = RectangleShape,
-                ambientColor = MaterialTheme.colorScheme.primary,
-                spotColor = MaterialTheme.colorScheme.primary
-            ),
-        shape = RectangleShape,
-        border = BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.primary
-        ),
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = contentColor
         )
     ) {
-        AnimatedContent(
-            targetState = icon,
-            modifier = Modifier.align(
-                Alignment.CenterHorizontally
-            ),
-            label = "IconAnimation"
-        ) { icon ->
-            Icon(
-                painter = icon,
-                contentDescription = title,
-                modifier = Modifier
-                    .size(75.dp)
-                    .padding(top = 16.dp),
-                tint = contentColor
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        AnimatedContent(
-            targetState = formattedText,
-            modifier = Modifier.align(
-                Alignment.CenterHorizontally
-            ),
-            label = "IconAnimation"
-        ) { formattedText ->
-            Text(
-                text = formattedText,
-                style = defaultTextStyle,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = title,
-            textAlign = TextAlign.Center,
+        Column(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Light,
-            color = contentColor
-        )
+                .padding(16.dp)
+        ) {
+            Row {
+                Text(
+                    text = title.toUpperCase(Locale.current),
+                    modifier = Modifier
+                        .weight(1f),
+                    fontSize = 14.sp,
+                    color = contentColor.copy(.5f)
+                )
+                Icon(
+                    painter = icon,
+                    contentDescription = title,
+                    modifier = Modifier
+                        .size(24.dp),
+                    tint = contentColor.copy(.5f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            AnimatedContent(
+                targetState = formattedText,
+                label = "IconAnimation"
+            ) { formattedText ->
+                Text(
+                    text = formattedText,
+                    style = defaultTextStyle,
+                )
+            }
+
+        }
+
     }
-    
+
 }
 
 @PreviewLightDark
 @Composable
 private fun InfoCardPreview() {
-    CryptoTrackerTheme { 
+    CryptoTrackerTheme {
         InfoCard(
             title = "Price",
             formattedText = "$ 25,234.22",

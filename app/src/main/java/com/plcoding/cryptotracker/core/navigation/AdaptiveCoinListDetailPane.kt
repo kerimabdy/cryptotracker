@@ -65,7 +65,8 @@ fun AdaptiveCoinListDetailPain(
         detailPane = {
             AnimatedPane {
                 CoinDetailScreen(
-                    state = state
+                    state = state,
+                    onClose = {}
                 )
             }
         },

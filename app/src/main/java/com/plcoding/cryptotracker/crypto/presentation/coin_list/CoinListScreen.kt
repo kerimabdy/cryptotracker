@@ -38,7 +38,7 @@ fun CoinListScreen(
         }
     } else {
         LazyColumn(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize(),
         ) {
             item {

@@ -6,6 +6,7 @@ import com.plcoding.cryptotracker.core.domain.util.onError
 import com.plcoding.cryptotracker.core.domain.util.onSuccess
 import com.plcoding.cryptotracker.crypto.domain.CoinDataSource
 import com.plcoding.cryptotracker.crypto.presentation.coin_detail.DataPoint
+import com.plcoding.cryptotracker.crypto.presentation.coin_detail.toDisplayableDataPoint
 import com.plcoding.cryptotracker.crypto.presentation.models.CoinUi
 import com.plcoding.cryptotracker.crypto.presentation.models.toCoinUi
 import kotlinx.coroutines.channels.Channel
@@ -59,13 +60,7 @@ class CoinListViewModel(
                     val dataPoints = history
                         .sortedBy { it.dateTime }
                         .map {
-                            DataPoint(
-                                x = it.dateTime.hour.toFloat(),
-                                y = it.priceUsd.toFloat(),
-                                xLabel = DateTimeFormatter
-                                    .ofPattern("ha\nM/d")
-                                    .format(it.dateTime)
-                            )
+                            it.toDisplayableDataPoint()
                         }
                     _state.update {
                         it.copy(
