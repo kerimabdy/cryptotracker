@@ -30,6 +30,7 @@ fun PriceChange(
     }
 
     Row(
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
